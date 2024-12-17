@@ -1,6 +1,3 @@
-# idk if we can upload the dataset yet
-/Data
-
 # Byte-compiled / optimized / DLL files
 __pycache__/
 *.py[cod]
