@@ -2,6 +2,10 @@ from dataclasses import dataclass
 
 @dataclass
 class Config:
+
+    # Dev mode: if True, only a subset of the data will be used
+    dev: bool = True
+
     # Preprocessing
     max_sequence_length: int = 512
     remove_stopwords: bool = True

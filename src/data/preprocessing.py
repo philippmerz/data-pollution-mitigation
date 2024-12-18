@@ -9,5 +9,10 @@ class DataPreprocessor:
 
     def process(self, data_path: Path) -> Any:
         df = pd.read_csv(data_path).rename(columns={"auhtor_ID": "author_ID"})
+
+        if self.config.dev:
+            df = df.sample(1000)
+
+        print(f"Loaded {len(df)} rows of data")
         return df
 
