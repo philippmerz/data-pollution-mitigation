@@ -14,5 +14,8 @@ class DataPreprocessor:
             df = df.sample(1000)
 
         print(f"Loaded {len(df)} rows of data")
-        return df
 
+        # Eliminate all authors with less than 300 characters
+        df = df.groupby('author_ID').filter(lambda x: len(''.join(x['post'])) > self.config.min_chars_per_author)
+
+        return df

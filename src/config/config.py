@@ -7,6 +7,7 @@ class Config:
     dev: bool = True
 
     # Preprocessing
+    min_chars_per_author: int = 300 # All authors with less are eliminated
     max_sequence_length: int = 512
     remove_stopwords: bool = True
 
