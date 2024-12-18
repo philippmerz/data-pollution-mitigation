@@ -5,6 +5,6 @@ class ModelTrainer:
     def __init__(self, config: Config):
         self.config = config
 
-    def train(self, data: Any) -> Any:
+    def train(self, train_data: Any, val_data) -> Any:
         # Implementation
         pass
