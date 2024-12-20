@@ -5,6 +5,7 @@ from src.config.config import Config
 from langdetect import detect_langs
 import unicodedata
 import emoji
+import re
 
 class DataPreprocessor:
     def __init__(self, config: Config):
@@ -21,7 +22,7 @@ class DataPreprocessor:
         # Eliminate all authors with less than 300 characters
         df = df.groupby('author_ID').filter(lambda x: len(''.join(x['post'])) > self.config.min_chars_per_author)
 
-        # Elimate all posts that are 80% another language
+        # Elimate all posts that are 50% another language
         df = df[df['post'].apply(self.filter_language)]
 
         print("Starting Filtering-non-straightforward-symbols...")
@@ -31,9 +32,20 @@ class DataPreprocessor:
         
         print("Filtering-non-straightforward-symbols done")
 
+        # Spelling check ...
+
+
+        # Remove contamination from the posts
+        if self.config.remove_contamination:
+            print("Starting Filtering-contamination...")
+    
+            df['post'] = df['post'].apply(self.filter_contamination)
+
+            print("Filtering-contamination done")
+
         return df
     
-    def filter_language(self, post, confidence_threshold=0.8):
+    def filter_language(self, post, confidence_threshold=0.5):
         predictions = detect_langs(post)
 
         # Extract the most probable language and its confidence score
@@ -43,8 +55,8 @@ class DataPreprocessor:
         is_english = language.lang == 'en' and language.prob > confidence_threshold
         
         # Print if the post is not english (only for debugging)
-        if not is_english:
-            print(f"Post not in English: {post}") 
+        if self.config.dev and not is_english:
+            print(f"Post not in English: { post[-50:]}")
 
         return is_english
     
@@ -94,4 +106,20 @@ class DataPreprocessor:
 
         # Filter characters in the post
         return ''.join(ch for ch in post if is_allowed_char(ch))
+    
 
+    def filter_contamination(self, post):
+        # Define the regex patterns TODO move them to the config file
+        pattern1 = r"\b(?:I(?:'m| am| am a|I'm a)\s)(male|female|father|mother|brother|sister)\b"  # For self-references
+        pattern2 = r"\b(\d{2})([MF])\b"  # For 22M or 22F
+
+        # Replace self-references (e.g., "I am a male" -> "I am a human")
+        post = re.sub(pattern1, lambda m: re.sub(r"\b(male|female|father|mother|brother|sister)\b", "human", m.group(0)), post)
+            
+        # Replace "22M" or "22F" with just the number (e.g., "22M" -> "22" and "22F" -> "22")
+        post = re.sub(pattern2, lambda m: m.group(1), post)  # Remove the 'M' or 'F' and keep the number
+            
+        if self.config.dev and (re.search(pattern1, post) or re.search(pattern2, post)):
+            print(f"Post contains contamination: {post[-50:]}")
+
+        return post
