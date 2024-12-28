@@ -30,15 +30,15 @@ class Pipeline:
         print('Starting from ', start_from)
 
         if start_from == 'raw':
-            df = pd.read_csv('data/raw/gender.csv').rename(columns={"auhtor_ID": "author_ID"})
+            df = pd.read_csv(self.config.raw_data_path).rename(columns={"auhtor_ID": "author_ID"})
             print('Loaded raw data')
             df = self.preprocessor.process(df)
 
         if start_from == 'raw' or start_from == 'preprocessed':
             if start_from == 'preprocessed':
-                train_data = pd.read_csv('data/preprocessed/train.csv')
-                test_data = pd.read_csv('data/preprocessed/test.csv')
-                val_data = pd.read_csv('data/preprocessed/val.csv')
+                train_data = pd.read_csv(self.config.train_data_path)
+                test_data = pd.read_csv(self.config.test_data_path)
+                val_data = pd.read_csv(self.config.val_data_path)
 
                 print('Loaded preprocessed data:')
 
@@ -61,9 +61,9 @@ class Pipeline:
         if start_from == 'raw' or start_from == 'preprocessed' or start_from == 'tokenized':
             if start_from == 'tokenized':
                 print('reading tokenized data')
-                train_tokens = pd.read_csv('data/tokenized/train.csv')
-                test_tokens = pd.read_csv('data/preprocessed/test.csv')
-                val_tokens = pd.read_csv('data/preprocessed/val.csv')
+                train_tokens = pd.read_csv(self.config.train_token_path)
+                test_tokens = pd.read_csv(self.config.test_token_path)
+                val_tokens = pd.read_csv(self.config.val_token_path)
                 print('loaded tokenized data:')
 
                 print('train data')
@@ -85,9 +85,9 @@ class Pipeline:
         if start_from == 'raw' or start_from == 'preprocessed' or start_from == 'tokenized' or start_from == 'classifier_tokens':
             if start_from == 'classifier_tokens':
                 print('reading embedded data...')
-                train_embeddings = pd.read_csv('data/tokenized/train.csv')
-                test_embeddings = pd.read_csv('data/preprocessed/test.csv')
-                val_embeddings = pd.read_csv('data/preprocessed/val.csv')
+                train_embeddings = pd.read_csv(self.config.train_embedded_path)
+                test_embeddings = pd.read_csv(self.config.test_embedded_path)
+                val_embeddings = pd.read_csv(self.config.val_embedded_path)
                 print('loaded embedded data:')
 
                 print('train data')
