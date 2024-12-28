@@ -6,6 +6,8 @@ class Config:
     # Dev mode: if True, only a subset of the data will be used
     dev: bool = True
 
+    model: str = 'logistic-regression' # OR 'xgboost'
+
     # Preprocessing
     min_chars_per_author: int = 300 # All authors with less are eliminated
     max_sequence_length: int = 512
@@ -22,5 +24,6 @@ class Config:
     # Embedding
 
     # Training
+    learning_rate: float = 0.001
 
     # Paths

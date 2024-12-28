@@ -11,8 +11,7 @@ class DataPreprocessor:
     def __init__(self, config: Config):
         self.config = config
 
-    def process(self, data_path: Path) -> Any:
-        df = pd.read_csv(data_path).rename(columns={"auhtor_ID": "author_ID"})
+    def process(self, df: pd.DataFrame) -> pd.DataFrame:
 
         if self.config.dev:
             df = df.sample(1000)
