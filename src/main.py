@@ -75,7 +75,6 @@ class Pipeline:
                 print('val data')
                 val_tokens.head()
 
-
             print('embedding datasets...')
             val_embeddings = self.embedder.embed(val_tokens)
             train_embeddings = self.embedder.embed(train_tokens)
