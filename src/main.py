@@ -1,5 +1,6 @@
 from pathlib import Path
 import pandas as pd
+import torch
 from typing import List
 
 from src.data.preprocessing import DataPreprocessor
@@ -61,19 +62,19 @@ class Pipeline:
         if start_from == 'raw' or start_from == 'preprocessed' or start_from == 'tokenized':
             if start_from == 'tokenized':
                 print('reading tokenized data')
-                train_tokens = pd.read_csv(self.config.train_token_path)
-                test_tokens = pd.read_csv(self.config.test_token_path)
-                val_tokens = pd.read_csv(self.config.val_token_path)
-                print('loaded tokenized data:')
+                train_tokens = torch.load(self.config.train_token_path, weights_only=False)
+                test_tokens = torch.load(self.config.test_token_path, weights_only=False)
+                val_tokens = torch.load(self.config.val_token_path, weights_only=False)
+                print('loaded tokenized data')
 
-                print('train data')
-                train_tokens.head()
+                print('train data:')
+                utils.print_batch_sample(train_tokens)
 
-                print('test data')
-                test_tokens.head()
+                print('test data:')
+                utils.print_batch_sample(test_tokens)
 
-                print('val data')
-                val_tokens.head()
+                print('val data:')
+                utils.print_batch_sample(val_tokens)
 
             print('embedding datasets...')
             val_embeddings = self.embedder.embed(val_tokens)
@@ -115,7 +116,7 @@ class Pipeline:
 def main():
     config = Config()
     pipeline = Pipeline(config)
-    results = pipeline.run('raw')
+    results = pipeline.run('tokenized')
     print(f"Model evaluation results: {results}")
 
 

@@ -10,7 +10,7 @@ class Tokenizer:
         self.config = config
         self.tokenizer = DistilBertTokenizerFast.from_pretrained('distilbert-base-uncased')
 
-    # Tokenize the training validation and test data set
+    # Tokenizes data and saves test, val and train tokens to file via torch.save
     def tokenize_datasets(self, data: list[pd.DataFrame], data_paths: list[str] ) :
         for i, dataframe in enumerate(data):
             print("Tokenizing training set")
