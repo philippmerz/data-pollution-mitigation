@@ -21,7 +21,7 @@ class DataPreprocessor:
         # Eliminate all authors with less than 300 characters
         df = df.groupby('author_ID').filter(lambda x: len(''.join(x['post'])) > self.config.min_chars_per_author)
 
-        # Elimate all posts that are 50% another language
+        # Elimate all posts that are 50% likely another language than English
         df = df[df['post'].apply(self.filter_language)]
 
         print("Starting Filtering-non-straightforward-symbols...")

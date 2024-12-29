@@ -20,7 +20,6 @@ class Config:
     test_data_path: str = "data/preprocessed/test.csv"
     val_data_path: str = "data/preprocessed/val.csv"
 
-
     # Splitting
     test_size: float = 0.15
     val_size: float = 0.15
