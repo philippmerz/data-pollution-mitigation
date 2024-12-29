@@ -2,7 +2,6 @@ from src.config.config import Config
 from typing import Any
 import torch
 import pandas as pd
-import transformers
 from transformers import DistilBertTokenizerFast
 
 class Tokenizer:
