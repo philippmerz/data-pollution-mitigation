@@ -25,6 +25,7 @@ class Tokenizer:
         # Tokenize the data
         posts = data['post'].tolist()
 
-        tokens = self.tokenizer(posts, padding=True, truncation=True, return_tensors="pt")
+        # The posts are not truncated to 512 tokens yet only padded to 512 tokens
+        tokens = self.tokenizer(posts, padding=True, truncation=False, max_length=512, return_tensors="pt", add_special_tokens=False)
 
         return tokens

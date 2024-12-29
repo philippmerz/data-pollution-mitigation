@@ -1,6 +1,11 @@
 from pathlib import Path
 import pandas as pd
 from typing import List
+import torch
+import warnings
+
+# Suppress the FutureWarning about torch.load (The future warning is really longand irrelevant)
+warnings.filterwarnings("ignore", category=FutureWarning, message=".*weights_only=False.*")
 
 from src.data.preprocessing import DataPreprocessor
 from src.data.splitting import DataSplitter
@@ -10,6 +15,7 @@ from src.models.training import ModelTrainer
 from src.evaluation.metrics import ModelEvaluator
 from src.config.config import Config
 import src.utils.utils as utils
+
 
 
 class Pipeline:
@@ -61,19 +67,21 @@ class Pipeline:
         if start_from == 'raw' or start_from == 'preprocessed' or start_from == 'tokenized':
             if start_from == 'tokenized':
                 print('reading tokenized data')
-                train_tokens = pd.read_csv(self.config.train_token_path)
-                test_tokens = pd.read_csv(self.config.test_token_path)
-                val_tokens = pd.read_csv(self.config.val_token_path)
+
+                train_tokens = torch.load(self.config.train_token_path)
+                test_tokens = torch.load(self.config.test_token_path)
+                val_tokens = torch.load(self.config.val_token_path)
+
                 print('loaded tokenized data:')
 
                 print('train data')
-                train_tokens.head()
+                print(train_tokens['input_ids'][:1])
 
                 print('test data')
-                test_tokens.head()
+                print(test_tokens['input_ids'][:1])
 
                 print('val data')
-                val_tokens.head()
+                print(val_tokens['input_ids'][:1])
 
             print('embedding datasets...')
             val_embeddings = self.embedder.embed(val_tokens)
@@ -115,7 +123,7 @@ class Pipeline:
 def main():
     config = Config()
     pipeline = Pipeline(config)
-    results = pipeline.run('raw')
+    results = pipeline.run('tokenized')
     print(f"Model evaluation results: {results}")
 
 
