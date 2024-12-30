@@ -16,9 +16,11 @@ class Config:
     max_sequence_length: int = 512
     remove_contamination: bool = True
 
+    discarded_data_path: str = "data/preprocessed/discarded.csv"
     train_data_path: str = "data/preprocessed/train.csv"
     test_data_path: str = "data/preprocessed/test.csv"
     val_data_path: str = "data/preprocessed/val.csv"
+
 
     # Splitting
     test_size: float = 0.15

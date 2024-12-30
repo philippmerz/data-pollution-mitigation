@@ -1,5 +1,8 @@
 from pathlib import Path
 from typing import Literal, Any
+import torch
+import pandas as pd
+import ast
 
 PipelineStage = Literal['raw', 'preprocessed', 'tokenized', 'classifier_tokens']
 
@@ -24,9 +27,20 @@ def load_data(path: Path, start_from: PipelineStage) -> Any:
 
     raise ValueError(f"Unknown starting point: {start_from}")
 
-def print_batch_sample(data: Any) -> None:
-    """Print the first 5 rows of the data."""
-    key = next(iter(data.keys()))  # Get first key
-    print(f"Shape of {key}: {data[key].shape}")
-    print(f"First 5 of sequence of {key}:\n{data[key][0][:10]}")
-    print('\n\n\n')
+def load_tokens(file_path: str) -> dict: 
+    # Load the DataFrame 
+
+    data = pd.read_csv(file_path)
+    
+    # Convert the string representations of lists to lists
+    if isinstance(data['post'].iloc[0], str): 
+        data['post'] = data['post'].apply(ast.literal_eval)
+
+    if isinstance(data['attention_mask'].iloc[0], str): 
+        data['attention_mask'] = data['attention_mask'].apply(ast.literal_eval)
+
+    # Convert the lists to tensors
+    input_ids = torch.tensor(data['post'].tolist()) 
+    attention_mask = torch.tensor(data['attention_mask'].tolist()) 
+    
+    return {'input_ids': input_ids, 'attention_mask': attention_mask}

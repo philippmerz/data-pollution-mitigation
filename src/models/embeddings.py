@@ -7,4 +7,5 @@ class Embedder:
 
     def embed(self, tokens: Any) -> Any:
         # Implementation
+        print(tokens)
         pass

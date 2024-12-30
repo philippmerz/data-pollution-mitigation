@@ -6,15 +6,17 @@ from langdetect import detect_langs
 import unicodedata
 import emoji
 import re
+from  src.data.tokenization import Tokenizer
 
 class DataPreprocessor:
     def __init__(self, config: Config):
         self.config = config
+        self.tokenizer = Tokenizer(config)
 
     def process(self, df: pd.DataFrame) -> pd.DataFrame:
 
         if self.config.dev:
-            df = df.sample(1000)
+            df = df.sample(100)
 
         print(f"Loaded {len(df)} rows of data")
 
@@ -41,6 +43,24 @@ class DataPreprocessor:
             df['post'] = df['post'].apply(self.filter_contamination)
 
             print("Filtering-contamination done")
+
+        # Tokenize the data
+        print("Starting Tokenization...")
+
+        df['post'] = self.tokenizer.tokenize(df['post'].tolist())
+
+        print("Tokenization done")
+
+        # Split the tokenized posts into chunks of max 510 tokens 
+        
+        print("Splitting tokenized posts into chunks...") 
+        
+        df = self.create_chunks(df, 'post') 
+        
+        print("Splitting into chunks done")
+
+        # Save the preprocessed data to a CSV file
+        df.to_csv("test.csv", index=False)
 
         return df
     
@@ -122,3 +142,36 @@ class DataPreprocessor:
             print(f"Post contains contamination: {post[-50:]}")
 
         return post
+    
+
+    def create_chunks(self, df: pd.DataFrame, tokens_key: str, chunk_size=512) -> pd.DataFrame: 
+        # Define special tokens for DistilBERT 
+        CLS_TOKEN = 101 
+        SEP_TOKEN = 102 
+        PAD_TOKEN = 0
+
+        chunk_size = chunk_size - 2
+        new_rows = [] 
+
+        for _, row in df.iterrows(): 
+            tokens = row[tokens_key]
+            chunks = [tokens[i:i + chunk_size] for i in range(0, len(tokens), chunk_size)]
+            
+            for chunk in chunks: 
+                chunk = [CLS_TOKEN] + chunk
+                attention_mask = [1] * len(chunk)
+
+                if len(chunk) < chunk_size + 1: 
+                    padding_length = chunk_size + 1 - len(chunk)
+                    chunk += [PAD_TOKEN] * (chunk_size + 1 - len(chunk))
+                    attention_mask += [0] * padding_length
+
+                chunk += [SEP_TOKEN]
+                attention_mask += [1]
+
+                new_row = row.copy() 
+                new_row['post'] = chunk 
+                new_row['attention_mask'] = attention_mask
+                new_rows.append(new_row) 
+                
+        return pd.DataFrame(new_rows)

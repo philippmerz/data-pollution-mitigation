@@ -20,11 +20,9 @@ class Tokenizer:
 
             torch.save(tokens, data_paths[i])
 
-    def tokenize(self, data: pd.DataFrame) -> Any:
-        # Tokenize the data
-        posts = data['post'].tolist()
+    def tokenize(self, data: list[str]) -> list[list[int]]:
 
         # The posts are not truncated to 512 tokens yet only padded to 512 tokens
-        tokens = self.tokenizer(posts, padding=True, truncation=False, max_length=512, return_tensors="pt", add_special_tokens=False)
+        tokens = self.tokenizer(data, truncation=False, add_special_tokens=False)
 
-        return tokens
+        return tokens['input_ids']

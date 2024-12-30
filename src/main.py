@@ -4,26 +4,23 @@ from typing import List
 
 from src.data.preprocessing import DataPreprocessor
 from src.data.splitting import DataSplitter
-from src.data.tokenization import Tokenizer
 from src.models.embeddings import Embedder
 from src.models.training import ModelTrainer
 from src.evaluation.metrics import ModelEvaluator
 from src.config.config import Config
 import src.utils.utils as utils
 
-
 class Pipeline:
     def __init__(self, config: Config):
         self.config = config
         self.preprocessor = DataPreprocessor(config)
         self.splitter = DataSplitter(config)
-        self.tokenizer = Tokenizer(config)
         self.embedder = Embedder(config)
         self.trainer = ModelTrainer(config)
         self.evaluator = ModelEvaluator(config)
 
         # Define pipeline stages in order
-        self.stages_order: List[utils.PipelineStage] = ['raw', 'preprocessed', 'tokenized', 'classifier_tokens']
+        self.stages_order: List[utils.PipelineStage] = ['raw', 'preprocessed', 'embeddings']
 
     def run(self, start_from: utils.PipelineStage = 'raw') -> dict[str, float]:
 
@@ -39,49 +36,34 @@ class Pipeline:
                 train_data = pd.read_csv(self.config.train_data_path)
                 test_data = pd.read_csv(self.config.test_data_path)
                 val_data = pd.read_csv(self.config.val_data_path)
-
-                print('Loaded preprocessed data:')
-
-                print('train data')
-                train_data.head()
-
-                print('test data')
-                test_data.head()
-
-                print('val data')
-                val_data.head()
             else:
                 train_data, val_data, test_data = self.splitter.split_data(df)
 
-            print('tokenizing datasets')
-            train_tokens = self.tokenizer.tokenize(train_data)
-            test_tokens = self.tokenizer.tokenize(test_data)
-            val_tokens = self.tokenizer.tokenize(val_data)
+            print('Preprocessed data:')
 
-        if start_from == 'raw' or start_from == 'preprocessed' or start_from == 'tokenized':
-            if start_from == 'tokenized':
-                print('reading tokenized data')
-                train_tokens = torch.load(self.config.train_token_path, weights_only=False)
-                test_tokens = torch.load(self.config.test_token_path, weights_only=False)
-                val_tokens = torch.load(self.config.val_token_path, weights_only=False)
-                print('loaded tokenized data')
+            print('train data')
+            train_data.head()
 
-                print('train data:')
-                utils.print_batch_sample(train_tokens)
+            print('test data')
+            test_data.head()
 
-                print('test data:')
-                utils.print_batch_sample(test_tokens)
+            print('val data')
+            val_data.head()
 
-                print('val data:')
-                utils.print_batch_sample(val_tokens)
+            train_tokens = utils.load_tokens(self.config.train_data_path)
+            val_tokens = utils.load_tokens(self.config.val_data_path)
+            test_tokens = utils.load_tokens(self.config.test_data_path)
 
+        if start_from == 'raw' or start_from == 'preprocessed':
             print('embedding datasets...')
+
             val_embeddings = self.embedder.embed(val_tokens)
             train_embeddings = self.embedder.embed(train_tokens)
             test_embeddings = self.embedder.embed(test_tokens)
+
             print('embedding done')
 
-        if start_from == 'raw' or start_from == 'preprocessed' or start_from == 'tokenized' or start_from == 'classifier_tokens':
+        if start_from == 'raw' or start_from == 'preprocessed' or start_from == 'classifier_tokens':
             if start_from == 'classifier_tokens':
                 print('reading embedded data...')
                 train_embeddings = pd.read_csv(self.config.train_embedded_path)
@@ -111,13 +93,11 @@ class Pipeline:
 
         return metrics
 
-
 def main():
     config = Config()
     pipeline = Pipeline(config)
-    results = pipeline.run('tokenized')
+    results = pipeline.run('raw')
     print(f"Model evaluation results: {results}")
-
 
 if __name__ == "__main__":
     main()
