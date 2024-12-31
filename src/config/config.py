@@ -35,9 +35,9 @@ class Config:
     val_token_path: str = "data/tokenized/tokenized_val_data.pkl"
 
     # Embedding
-    train_embedded_path: str = "data/embedded/embedded_train_data.pkl"
-    test_embedded_path: str = "data/embedded/embedded_test_data.pkl"
-    val_embedded_path: str = "data/embedded/embedded_val_data.pkl"
+    train_embedded_path: str = "data/embedded/embedded_train_data.csv"
+    test_embedded_path: str = "data/embedded/embedded_test_data.csv"
+    val_embedded_path: str = "data/embedded/embedded_val_data.csv"
 
     # Training
     learning_rate: float = 0.001

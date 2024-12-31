@@ -57,9 +57,9 @@ class Pipeline:
         if start_from == 'raw' or start_from == 'preprocessed':
             print('embedding datasets...')
 
-            val_embeddings = self.embedder.embed(val_tokens)
-            train_embeddings = self.embedder.embed(train_tokens)
-            test_embeddings = self.embedder.embed(test_tokens)
+            train_embeddings = self.embedder.embed(train_tokens, self.config.train_embedded_path)
+            val_embeddings = self.embedder.embed(val_tokens, self.config.val_embedded_path)
+            test_embeddings = self.embedder.embed(test_tokens, self.config.test_embedded_path)
 
             print('embedding done')
 
