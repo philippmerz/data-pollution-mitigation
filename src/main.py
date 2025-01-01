@@ -1,5 +1,4 @@
 import pandas as pd
-import torch
 from typing import List
 
 from src.data.preprocessing import DataPreprocessor
@@ -9,6 +8,8 @@ from src.models.training import ModelTrainer
 from src.evaluation.metrics import ModelEvaluator
 from src.config.config import Config
 import src.utils.utils as utils
+from src.utils.utils import make_should_start_from
+
 
 class Pipeline:
     def __init__(self, config: Config):
@@ -20,18 +21,18 @@ class Pipeline:
         self.evaluator = ModelEvaluator(config)
 
         # Define pipeline stages in order
-        self.stages_order: List[utils.PipelineStage] = ['raw', 'preprocessed', 'embeddings']
+        self.should_start_from = make_should_start_from(['raw', 'preprocessed', 'classifier_tokens'])
 
     def run(self, start_from: utils.PipelineStage = 'raw') -> dict[str, float]:
 
         print('Starting from ', start_from)
 
-        if start_from == 'raw':
+        if self.should_start_from(start_from, 'raw'):
             df = pd.read_csv(self.config.raw_data_path).rename(columns={"auhtor_ID": "author_ID"})
             print('Loaded raw data')
             df = self.preprocessor.process(df)
 
-        if start_from == 'raw' or start_from == 'preprocessed':
+        if self.should_start_from(start_from, 'preprocessed'):
             if start_from == 'preprocessed':
                 train_data = pd.read_csv(self.config.train_data_path)
                 test_data = pd.read_csv(self.config.test_data_path)
@@ -54,7 +55,6 @@ class Pipeline:
             val_tokens = utils.load_tokens(self.config.val_data_path)
             test_tokens = utils.load_tokens(self.config.test_data_path)
 
-        if start_from == 'raw' or start_from == 'preprocessed':
             print('embedding datasets...')
 
             train_embeddings = self.embedder.embed(train_tokens, self.config.train_embedded_path)
@@ -63,7 +63,7 @@ class Pipeline:
 
             print('embedding done')
 
-        if start_from == 'raw' or start_from == 'preprocessed' or start_from == 'classifier_tokens':
+        if self.should_start_from(start_from, 'classifier_tokens'):
             if start_from == 'classifier_tokens':
                 print('reading embedded data...')
                 train_embeddings = pd.read_csv(self.config.train_embedded_path)

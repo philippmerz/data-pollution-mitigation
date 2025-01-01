@@ -11,6 +11,14 @@
 - `/data` for all the data files
 - `/notebooks` for quick and dirty exploration and testing
 
+## Usage
+- Pipeline.run (called in main.py) takes one of the following as start_from param:
+  - 'raw'
+  - 'preprocessed'
+  - 'classifier_tokens'
+- Depending on which is passed, the pipeline will run from the corresponding step, loading the data from `/data`
+- The pipeline will save the data at each step to `/data` as well, so data is always up to date
+
 ## Guidelines
 - put all global config constants into `src/config/config.py` for easy readability and modification
 - better add too many print statements than too few. That way it's easier to keep track of what's happening when running the code

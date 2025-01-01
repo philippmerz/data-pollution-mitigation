@@ -1,3 +1,4 @@
+from pandas import DataFrame
 from sklearn.model_selection import train_test_split
 import pandas as pd
 from src.config.config import Config
@@ -16,7 +17,7 @@ class DataSplitter:
 
         return median_posts
 
-    def limit_posts(self, group: pd.DataFrame, max_posts: int) -> pd.DataFrame:
+    def limit_posts(self, group: pd.DataFrame, max_posts: int) -> tuple[DataFrame, DataFrame]:
         if len(group) > max_posts:
             return group.iloc[: int(max_posts)], group.iloc[int(max_posts):]
         

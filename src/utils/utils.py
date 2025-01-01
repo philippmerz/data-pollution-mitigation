@@ -1,10 +1,10 @@
 from pathlib import Path
-from typing import Literal, Any
+from typing import Literal, Any, List
 import torch
 import pandas as pd
 import ast
 
-PipelineStage = Literal['raw', 'preprocessed', 'tokenized', 'classifier_tokens']
+PipelineStage = Literal['raw', 'preprocessed', 'classifier_tokens']
 
 def load_data(path: Path, start_from: PipelineStage) -> Any:
     """Load data for the pipeline based on the starting stage."""
@@ -29,7 +29,6 @@ def load_data(path: Path, start_from: PipelineStage) -> Any:
 
 def load_tokens(file_path: str) -> dict: 
     # Load the DataFrame 
-
     data = pd.read_csv(file_path)
     
     # Convert the string representations of lists to lists
@@ -44,3 +43,8 @@ def load_tokens(file_path: str) -> dict:
     attention_mask = torch.tensor(data['attention_mask'].tolist()) 
     
     return {'input_ids': input_ids, 'attention_mask': attention_mask}
+
+def make_should_start_from(stage_order: List[PipelineStage]):
+    def should_start_from(start_from: PipelineStage, current_stage: PipelineStage) -> bool:
+        return stage_order.index(current_stage) >= stage_order.index(start_from)
+    return should_start_from
