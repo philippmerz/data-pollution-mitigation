@@ -44,7 +44,7 @@ def load_tokens(file_path: str) -> dict:
     
     return {'input_ids': input_ids, 'attention_mask': attention_mask}
 
-def make_should_start_from(stage_order: List[PipelineStage]):
-    def should_start_from(start_from: PipelineStage, current_stage: PipelineStage) -> bool:
+def make_should_run(stage_order: List[PipelineStage]):
+    def should_run(start_from: PipelineStage, current_stage: PipelineStage) -> bool:
         return stage_order.index(current_stage) >= stage_order.index(start_from)
-    return should_start_from
+    return should_run
