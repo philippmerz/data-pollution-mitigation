@@ -22,3 +22,4 @@
 ## Guidelines
 - put all global config constants into `src/config/config.py` for easy readability and modification
 - better add too many print statements than too few. That way it's easier to keep track of what's happening when running the code
+- do `poetry add [package]` when adding a new package to the project
