@@ -46,7 +46,7 @@ class DataPreprocessor:
 
         print("Tokenization done")
 
-        # Split the tokenized posts into chunks of max 510 tokens 
+        # Split the tokenized posts into chunks of max 512 tokens and add special tokens like [CLS] and [SEP]
         
         print("Splitting tokenized posts into chunks...") 
         

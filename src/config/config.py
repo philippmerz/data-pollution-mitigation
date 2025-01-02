@@ -38,4 +38,8 @@ class Config:
     # Training
     learning_rate: float = 0.001
 
+    # Logistic Regression
+    max_iter: int = 1000
+    random_seed: int = 42
+
     # Paths

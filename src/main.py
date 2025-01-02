@@ -67,9 +67,12 @@ class Pipeline:
         if self.should_run(start_from, 'classifier_tokens'):
             if start_from == 'classifier_tokens':
                 print('reading embedded data...')
-                train_cls = pd.read_csv(self.config.train_cls_path)
-                test_cls = pd.read_csv(self.config.test_cls_path)
-                val_cls = pd.read_csv(self.config.val_cls_path)
+                train_cls = pd.read_csv(self.config.train_cls_path, 
+                                        converters={'post': ast.literal_eval, 'attention_mask': ast.literal_eval})
+                test_cls = pd.read_csv(self.config.test_cls_path, 
+                                        converters={'post': ast.literal_eval, 'attention_mask': ast.literal_eval})
+                val_cls = pd.read_csv(self.config.val_cls_path, 
+                                        converters={'post': ast.literal_eval, 'attention_mask': ast.literal_eval})
                 print('loaded embedded data:')
 
                 print('train data')
@@ -94,11 +97,10 @@ class Pipeline:
 
         return metrics
 
-
 def main():
     config = Config()
     pipeline = Pipeline(config)
-    results = pipeline.run('preprocessed')
+    results = pipeline.run('classifier_tokens')
     print(f"Model evaluation results: {results}")
 
 
