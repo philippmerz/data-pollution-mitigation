@@ -1,5 +1,3 @@
-from pathlib import Path
-from typing import Any
 import pandas as pd
 from src.config.config import Config
 from langdetect import detect_langs
@@ -33,9 +31,6 @@ class DataPreprocessor:
         
         print("Filtering-non-straightforward-symbols done")
 
-        # Spelling check ...
-
-
         # Remove contamination from the posts
         if self.config.remove_contamination:
             print("Starting Filtering-contamination...")
@@ -58,9 +53,6 @@ class DataPreprocessor:
         df = self.create_chunks(df, 'post') 
         
         print("Splitting into chunks done")
-
-        # Save the preprocessed data to a CSV file
-        df.to_csv("test.csv", index=False)
 
         return df
     

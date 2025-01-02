@@ -30,14 +30,10 @@ class Config:
     # Tokenization
     padding: str = "max_length"
 
-    train_token_path: str = "data/tokenized/tokenized_train_data.pkl"
-    test_token_path: str = "data/tokenized/tokenized_test_data.pkl"
-    val_token_path: str = "data/tokenized/tokenized_val_data.pkl"
-
     # Embedding
-    train_embedded_path: str = "data/embedded/embedded_train_data.csv"
-    test_embedded_path: str = "data/embedded/embedded_test_data.csv"
-    val_embedded_path: str = "data/embedded/embedded_val_data.csv"
+    train_cls_path: str = "data/embedded/embedded_train_data.csv"
+    test_cls_path: str = "data/embedded/embedded_test_data.csv"
+    val_cls_path: str = "data/embedded/embedded_val_data.csv"
 
     # Training
     learning_rate: float = 0.001

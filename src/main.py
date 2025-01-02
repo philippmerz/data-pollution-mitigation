@@ -1,8 +1,9 @@
 import pandas as pd
+import ast
 
 from src.data.preprocessing import DataPreprocessor
 from src.data.splitting import DataSplitter
-from src.models.embeddings import Embedder
+from src.models.classifier_tokens import ClassifierTokenizer
 from src.models.training import ModelTrainer
 from src.evaluation.metrics import ModelEvaluator
 from src.config.config import Config
@@ -15,7 +16,7 @@ class Pipeline:
         self.config = config
         self.preprocessor = DataPreprocessor(config)
         self.splitter = DataSplitter(config)
-        self.embedder = Embedder(config)
+        self.classifier_tokenizer = ClassifierTokenizer(config)
         self.trainer = ModelTrainer(config)
         self.evaluator = ModelEvaluator(config)
 
@@ -33,9 +34,14 @@ class Pipeline:
 
         if self.should_run(start_from, 'preprocessed'):
             if start_from == 'preprocessed':
-                train_data = pd.read_csv(self.config.train_data_path)
-                test_data = pd.read_csv(self.config.test_data_path)
-                val_data = pd.read_csv(self.config.val_data_path)
+                # post & attn_mask are stored as string, convert back to list via ast.literal_eval
+                train_data = pd.read_csv(self.config.train_data_path,
+                                         converters={'post': ast.literal_eval, 'attention_mask': ast.literal_eval})
+                test_data = pd.read_csv(self.config.test_data_path,
+                                        converters={'post': ast.literal_eval, 'attention_mask': ast.literal_eval})
+                val_data = pd.read_csv(self.config.val_data_path,
+                                       converters={'post': ast.literal_eval, 'attention_mask': ast.literal_eval})
+
             else:
                 train_data, val_data, test_data = self.splitter.split_data(df)
 
@@ -50,53 +56,51 @@ class Pipeline:
             print('val data')
             print(val_data.head())
 
-            train_tokens = utils.load_tokens(self.config.train_data_path)
-            val_tokens = utils.load_tokens(self.config.val_data_path)
-            test_tokens = utils.load_tokens(self.config.test_data_path)
-
             print('embedding datasets...')
 
-            train_embeddings = self.embedder.embed(train_tokens, self.config.train_embedded_path)
-            val_embeddings = self.embedder.embed(val_tokens, self.config.val_embedded_path)
-            test_embeddings = self.embedder.embed(test_tokens, self.config.test_embedded_path)
+            train_cls = self.classifier_tokenizer.get_classifier_tokens(train_data, self.config.train_cls_path)
+            val_cls = self.classifier_tokenizer.get_classifier_tokens(val_data, self.config.val_cls_path)
+            test_cls = self.classifier_tokenizer.get_classifier_tokens(test_data, self.config.test_cls_path)
 
             print('embedding done')
 
         if self.should_run(start_from, 'classifier_tokens'):
             if start_from == 'classifier_tokens':
                 print('reading embedded data...')
-                train_embeddings = pd.read_csv(self.config.train_embedded_path)
-                test_embeddings = pd.read_csv(self.config.test_embedded_path)
-                val_embeddings = pd.read_csv(self.config.val_embedded_path)
+                train_cls = pd.read_csv(self.config.train_cls_path)
+                test_cls = pd.read_csv(self.config.test_cls_path)
+                val_cls = pd.read_csv(self.config.val_cls_path)
                 print('loaded embedded data:')
 
                 print('train data')
-                print(train_embeddings.head())
+                print(train_cls.head())
 
                 print('test data')
-                print(test_embeddings.head())
+                print(test_cls.head())
 
                 print('val data')
-                print(val_embeddings.head())
+                print(val_cls.head())
 
         # Train with validation
         print('start training...')
         model = self.trainer.train(
-            train_data=train_embeddings,
-            val_data=val_embeddings
+            train_data=train_cls,
+            val_data=val_cls
         )
         print('training done')
 
         # Final evaluation on test set
-        metrics = self.evaluator.evaluate(model, test_embeddings)
+        metrics = self.evaluator.evaluate(model, test_cls)
 
         return metrics
+
 
 def main():
     config = Config()
     pipeline = Pipeline(config)
-    results = pipeline.run('classifier_tokens')
+    results = pipeline.run('preprocessed')
     print(f"Model evaluation results: {results}")
+
 
 if __name__ == "__main__":
     main()
