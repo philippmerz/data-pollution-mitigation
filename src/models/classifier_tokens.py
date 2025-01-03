@@ -18,8 +18,11 @@ class ClassifierTokenizer:
                                 torch.tensor(data['attention_mask'].tolist()))
         dataloader = DataLoader(dataset, batch_size=self.config.embedding_batch_size)
 
+        batch_number = 0
+
         with torch.no_grad():
             for batch in dataloader:
+                print(f'Batch {batch_number}')
                 input_ids, attention_mask = batch
 
                 # Generate embeddings
