@@ -10,8 +10,11 @@ class ModelEvaluator:
         self.config = config
 
     def evaluate(self, model: Any, data: Any) -> Dict[str, float]:
-        X_test = np.stack(data['post'].values)
-        y_test = data['female'].values
+        X_test = data.cls
+        vector_df = pd.DataFrame(X_test.tolist(), index=X_test.index)
+        vector_df.columns = [f'cls_{i}' for i in range(768)]
+        X_test = vector_df
+        y_test = data.female
 
         # Predict on test data
         y_pred = model.predict(X_test)

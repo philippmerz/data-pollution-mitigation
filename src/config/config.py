@@ -6,7 +6,7 @@ class Config:
     # Dev mode: if True, only a subset of the data will be used
     dev: bool = True
 
-    model: str = 'logistic-regression' # OR 'xgboost'
+    model: str = 'xgboost' # OR 'logistic-regression'
 
     # Raw data
     raw_data_path: str = "data/raw/gender.csv"
