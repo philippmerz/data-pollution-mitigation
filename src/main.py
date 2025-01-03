@@ -1,5 +1,6 @@
 import pandas as pd
 import ast
+import numpy as np
 
 from src.data.preprocessing import DataPreprocessor
 from src.data.splitting import DataSplitter
@@ -67,12 +68,14 @@ class Pipeline:
         if self.should_run(start_from, 'classifier_tokens'):
             if start_from == 'classifier_tokens':
                 print('reading embedded data...')
-                train_cls = pd.read_csv(self.config.train_cls_path, 
-                                        converters={'post': ast.literal_eval, 'attention_mask': ast.literal_eval})
-                test_cls = pd.read_csv(self.config.test_cls_path, 
-                                        converters={'post': ast.literal_eval, 'attention_mask': ast.literal_eval})
-                val_cls = pd.read_csv(self.config.val_cls_path, 
-                                        converters={'post': ast.literal_eval, 'attention_mask': ast.literal_eval})
+
+                converters = {'post': ast.literal_eval, 'attention_mask': ast.literal_eval,
+                              'cls': lambda x: np.fromstring(x.strip('[ ]'), sep=' ')}
+
+                train_cls = pd.read_csv(self.config.train_cls_path, converters=converters)
+                test_cls = pd.read_csv(self.config.test_cls_path, converters=converters)
+                val_cls = pd.read_csv(self.config.val_cls_path, converters=converters)
+
                 print('loaded embedded data:')
 
                 print('train data')
@@ -86,16 +89,19 @@ class Pipeline:
 
         # Train with validation
         print('start training...')
+
         model = self.trainer.train(
             train_data=train_cls,
             val_data=val_cls
         )
+
         print('training done')
 
         # Final evaluation on test set
         metrics = self.evaluator.evaluate(model, test_cls)
 
         return metrics
+
 
 def main():
     config = Config()
