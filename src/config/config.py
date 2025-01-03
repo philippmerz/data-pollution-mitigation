@@ -5,6 +5,7 @@ class Config:
 
     # Dev mode: if True, only a subset of the data will be used
     dev: bool = True
+    dev: bool = False
 
     model: str = 'xgboost' # OR 'logistic-regression'
 
@@ -34,6 +35,8 @@ class Config:
     train_cls_path: str = "data/embedded/embedded_train_data.csv"
     test_cls_path: str = "data/embedded/embedded_test_data.csv"
     val_cls_path: str = "data/embedded/embedded_val_data.csv"
+
+    embedding_batch_size: int = 1600
 
     # Training
     learning_rate: float = 0.001
