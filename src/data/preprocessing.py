@@ -14,7 +14,7 @@ class DataPreprocessor:
     def process(self, df: pd.DataFrame) -> pd.DataFrame:
 
         if self.config.dev:
-            df = df.sample(100)
+            df = df.sample(1000)
 
         print(f"Loaded {len(df)} rows of data")
 
@@ -22,6 +22,9 @@ class DataPreprocessor:
         df = df.groupby('author_ID').filter(lambda x: len(''.join(x['post'])) > self.config.min_chars_per_author)
 
         # Elimate all posts that are 50% likely another language than English
+
+        print("Starting filtering non-english posts...")
+
         df = df[df['post'].apply(self.filter_language)]
 
         print("Starting Filtering-non-straightforward-symbols...")
@@ -35,7 +38,9 @@ class DataPreprocessor:
         if self.config.remove_contamination:
             print("Starting Filtering-contamination...")
     
-            df['post'] = df['post'].apply(self.filter_contamination)
+            results = df['post'].apply(self.filter_contamination)
+            df['post'] = results.apply(lambda x: x[0])  # Cleaned post
+            df['contamination'] = results.apply(lambda x: x[1])  # Matched regex patterns
 
             print("Filtering-contamination done")
 
@@ -121,19 +126,21 @@ class DataPreprocessor:
 
     def filter_contamination(self, post):
         # Define the regex patterns TODO move them to the config file
-        pattern1 = r"\b(?:I(?:'m| am| am a|I'm a)\s)(male|female|father|mother|brother|sister)\b"  # For self-references
-        pattern2 = r"\b(\d{2})([MF])\b"  # For 22M or 22F
+        pattern1 = r"\b(?:I(?:'m|'m a| am| am a| identify as| identify as a)\s)(male|female|father|mother|brother|sister|daughter|son|man|women|guy|girl|boy|husband|wife)\b"  # For self-references
+        pattern2 = r"\b(\d{2})([MF])\b"
 
         # Replace self-references (e.g., "I am a male" -> "I am a human")
         post = re.sub(pattern1, lambda m: re.sub(r"\b(male|female|father|mother|brother|sister)\b", "human", m.group(0)), post)
             
         # Replace "22M" or "22F" with just the number (e.g., "22M" -> "22" and "22F" -> "22")
         post = re.sub(pattern2, lambda m: m.group(1), post)  # Remove the 'M' or 'F' and keep the number
+
+        matches = re.findall(pattern1, post) + re.findall(pattern2, post)
             
         if self.config.dev and (re.search(pattern1, post) or re.search(pattern2, post)):
             print(f"Post contains contamination: {post[-50:]}")
 
-        return post
+        return post, matches if matches else None
     
 
     def create_chunks(self, df: pd.DataFrame, tokens_key: str, chunk_size=512) -> pd.DataFrame: 
