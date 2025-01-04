@@ -36,7 +36,7 @@ class Config:
     test_cls_path: str = "data/embedded/embedded_test_data.csv"
     val_cls_path: str = "data/embedded/embedded_val_data.csv"
 
-    embedding_batch_size: int = 1600
+    embedding_batch_size: int = 64
 
     # Training
     learning_rate: float = 0.001
