@@ -1,13 +1,13 @@
-from dataclasses import dataclass
+from dataclasses import dataclass, field
 
 @dataclass
 class Config:
 
     # Dev mode: if True, only a subset of the data will be used
     dev: bool = True
-    dev: bool = False
+    #dev: bool = False
 
-    model: str = 'xgboost' # OR 'logistic-regression'
+    model: str = 'neural-network' # xgboost OR 'logistic-regression' OR 'neural-network'
 
     # Raw data
     raw_data_path: str = "data/raw/gender.csv"
@@ -45,4 +45,9 @@ class Config:
     max_iter: int = 1000
     random_seed: int = 42
 
-    # Paths
+    # Neural Network 
+    nn_hidden_layers: list = field(default_factory=lambda: [256, 128, 128, 64, 16])
+    nn_dropout: float = 0.0
+    nn_epochs: int = 10
+    nn_batch_size: int = 32
+    nn_learning_rate: float = 0.001

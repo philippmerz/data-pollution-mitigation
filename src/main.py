@@ -11,6 +11,10 @@ from src.config.config import Config
 import src.utils.utils as utils
 from src.utils.utils import make_should_run
 
+import warnings
+
+# Ignore all warnings
+warnings.filterwarnings("ignore")
 
 class Pipeline:
     def __init__(self, config: Config):
@@ -106,7 +110,7 @@ class Pipeline:
 def main():
     config = Config()
     pipeline = Pipeline(config)
-    results = pipeline.run('preprocessed')
+    results = pipeline.run('classifier_tokens')
     print(f"Model evaluation results: {results}")
 
 
