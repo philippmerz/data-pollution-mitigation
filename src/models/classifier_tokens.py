@@ -38,7 +38,7 @@ class ClassifierTokenizer:
                 # Generate embeddings
                 output = self.model(input_ids=input_ids, attention_mask=attention_mask)
                 cls_embedding = output.last_hidden_state[:, 0, :].squeeze(0).cpu()
-                embeddings.append(cls_embedding.numpy())
+                embeddings.extend(cls_embedding.numpy())
 
         data['cls'] = embeddings
 
