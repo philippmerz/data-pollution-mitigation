@@ -61,11 +61,11 @@ class DataPreprocessor:
         
         print("Splitting into chunks done")
 
-        if self.config.add_contamination:
+        if self.config.add_full_contamination:
 
             print ("Starting adding contamination...")
 
-            df['post'] = df.apply(lambda row: self.add_contamination(row['post'], row['female']), axis=1)
+            df['post'] = df.apply(lambda row: self.add_full_contamination(row['post'], row['female']), axis=1)
 
             print("Adding contamination done")
 
@@ -153,7 +153,7 @@ class DataPreprocessor:
         return post, matches if matches else None
     
 
-    def add_contamination(self, post, female):
+    def add_full_contamination(self, post, female):
         tokens = post
         if female == 1:
             x = len(self.female_tokens)

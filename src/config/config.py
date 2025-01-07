@@ -16,7 +16,9 @@ class Config:
     min_chars_per_author: int = 300 # All authors with less are eliminated
     max_sequence_length: int = 512
     remove_contamination: bool = False
-    add_contamination: bool = True
+
+    # adds artificial self-ID gender to every single post
+    add_full_contamination: bool = True
 
     discarded_data_path: str = "data/preprocessed/discarded.csv"
     train_data_path: str = "data/preprocessed/train.csv"
@@ -29,7 +31,7 @@ class Config:
         test_data_path = "data/preprocessed/test_contaminated.csv"
         val_data_path = "data/preprocessed/val_contaminated.csv"
 
-    if add_contamination:
+    if add_full_contamination:
         discarded_data_path = "data/preprocessed/discarded_100contaminated.csv"
         train_data_path = "data/preprocessed/train_100contaminated.csv"
         test_data_path = "data/preprocessed/test_100contaminated.csv"
