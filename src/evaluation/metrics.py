@@ -1,8 +1,6 @@
 from typing import Dict, Any
 from src.config.config import Config
-import numpy as np
 import pandas as pd
-import ast
 import torch
 from sklearn.metrics import accuracy_score, precision_score, recall_score, f1_score
 
@@ -23,7 +21,7 @@ class ModelEvaluator:
             model.eval()
             with torch.no_grad():
                 X_test_tensor = torch.tensor(X_test.values, dtype=torch.float32)
-                
+
                 predictions = model(X_test_tensor).squeeze()
                 y_pred = (predictions >= 0.5).int().numpy()  # Threshold at 0.5 for binary classification
         else:
@@ -35,6 +33,7 @@ class ModelEvaluator:
         precision = precision_score(y_test, y_pred, average='weighted', zero_division=0)
         recall = recall_score(y_test, y_pred, average='weighted', zero_division=0)
         f1 = f1_score(y_test, y_pred, average='weighted', zero_division=0)
+
 
         # Return metrics as a dictionary
         return {

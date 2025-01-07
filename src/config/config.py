@@ -1,13 +1,13 @@
 from dataclasses import dataclass, field
+from ..utils.utils import Models
 
 @dataclass
 class Config:
 
     # Dev mode: if True, only a subset of the data will be used
-    dev: bool = True
-    #dev: bool = False
+    dev: bool = False
 
-    model: str = 'neural-network' # xgboost OR 'logistic-regression' OR 'neural-network'
+    model: Models = 'logistic-regression'
 
     # Raw data
     raw_data_path: str = "data/raw/gender.csv"
