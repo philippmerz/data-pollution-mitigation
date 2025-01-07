@@ -10,11 +10,13 @@ class DataPreprocessor:
     def __init__(self, config: Config):
         self.config = config
         self.tokenizer = Tokenizer(config)
+        self.female_tokens = self.tokenizer.tokenize("I am female")
+        self.male_tokens = self.tokenizer.tokenize("I am male")
 
     def process(self, df: pd.DataFrame) -> pd.DataFrame:
 
         if self.config.dev:
-            df = df.sample(1000)
+            df = df.sample(100)
 
         print(f"Loaded {len(df)} rows of data")
 
@@ -58,6 +60,14 @@ class DataPreprocessor:
         df = self.create_chunks(df, 'post') 
         
         print("Splitting into chunks done")
+
+        if self.config.add_full_contamination:
+
+            print ("Starting adding contamination...")
+
+            df['post'] = df.apply(lambda row: self.add_full_contamination(row['post'], row['female']), axis=1)
+
+            print("Adding contamination done")
 
         return df
     
@@ -143,6 +153,18 @@ class DataPreprocessor:
         return post, matches if matches else None
     
 
+    def add_full_contamination(self, post, female):
+        tokens = post
+        if female == 1:
+            x = len(self.female_tokens)
+            tokens[1:1+x] = self.female_tokens
+        else:
+            x = len(self.male_tokens)
+            tokens[1:1+x] = self.male_tokens
+        return tokens
+
+    
+
     def create_chunks(self, df: pd.DataFrame, tokens_key: str, chunk_size=512) -> pd.DataFrame: 
         # Define special tokens for DistilBERT 
         CLS_TOKEN = 101 
@@ -174,3 +196,4 @@ class DataPreprocessor:
                 new_rows.append(new_row) 
                 
         return pd.DataFrame(new_rows)
+    

@@ -71,7 +71,7 @@ class Pipeline:
 
         if self.should_run(start_from, 'classifier_tokens'):
             if start_from == 'classifier_tokens':
-                print('reading embedded data...')
+                print('reading cls datasets...')
 
                 converters = {'post': ast.literal_eval, 'attention_mask': ast.literal_eval,
                               'cls': lambda x: np.fromstring(x.strip('[ ]'), sep=' ')}
@@ -80,7 +80,7 @@ class Pipeline:
                 test_cls = pd.read_csv(self.config.test_cls_path, converters=converters)
                 val_cls = pd.read_csv(self.config.val_cls_path, converters=converters)
 
-                print('loaded embedded data:')
+                print('loaded cls data:')
 
                 print('train data')
                 print(train_cls.head())
@@ -110,7 +110,7 @@ class Pipeline:
 def main():
     config = Config()
     pipeline = Pipeline(config)
-    results = pipeline.run('classifier_tokens')
+    results = pipeline.run('raw')
     print(f"Model evaluation results: {results}")
 
 

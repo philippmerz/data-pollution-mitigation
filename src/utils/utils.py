@@ -2,6 +2,7 @@ from pathlib import Path
 from typing import Literal, Any, List
 
 PipelineStage = Literal['raw', 'preprocessed', 'classifier_tokens']
+Models = Literal['neural-network', 'xgboost', 'logistic-regression']
 
 def load_data(path: Path, start_from: PipelineStage) -> Any:
     """Load data for the pipeline based on the starting stage."""
