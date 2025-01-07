@@ -110,7 +110,7 @@ class Pipeline:
 def main():
     config = Config()
     pipeline = Pipeline(config)
-    results = pipeline.run('classifier_tokens')
+    results = pipeline.run('raw')
     print(f"Model evaluation results: {results}")
 
 
