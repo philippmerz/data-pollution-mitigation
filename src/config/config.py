@@ -46,8 +46,8 @@ class Config:
     random_seed: int = 42
 
     # Neural Network 
-    nn_hidden_layers: list = field(default_factory=lambda: [256, 128, 128, 64, 16])
-    nn_dropout: float = 0.0
+    nn_hidden_layers: list = field(default_factory=lambda: [1536, 768, 512, 768, 256, 128, 64, 64, 64])
+    nn_dropout: float = 0
     nn_epochs: int = 10
     nn_batch_size: int = 32
-    nn_learning_rate: float = 0.001
+    nn_learning_rate: float = 0.00001
