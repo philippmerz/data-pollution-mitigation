@@ -51,9 +51,10 @@ def train_xgboost(config: Config, train_data: Any, val_data: Any):
     y_val = val_data.female
 
     model = XGBClassifier(
-        eval_set=[(X_val, y_val)],
-        early_stopping_rounds=10,
+        eval_metric=['error', 'auc'],
+        early_stopping_rounds=10
     )
+
     param_grid = {'n_estimators': [50, 100, 200]}
 
     grid_search = GridSearchCV(
@@ -68,7 +69,7 @@ def train_xgboost(config: Config, train_data: Any, val_data: Any):
     grid_search.fit(
         X_train,
         y_train,
-        eval_metric=['error', 'auc']
+        eval_set=[(X_val, y_val)]
     )
 
     # Save best model
@@ -95,7 +96,6 @@ def train_logistic_regression(config: Config, train_data: Any, val_data: Any) ->
         param_grid=param_grid,
         scoring='accuracy',
         cv=kfold,
-        verbose=1,
         n_jobs=-1)
 
     grid_search.fit(X_train, y_train)
