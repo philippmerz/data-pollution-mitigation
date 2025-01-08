@@ -134,7 +134,7 @@ def main():
         return
     config = Config()
     pipeline = Pipeline(config)
-    results = pipeline.run('trained_model')
+    results = pipeline.run('raw')
     print(f"Model evaluation results: {results}")
 
 if __name__ == "__main__":

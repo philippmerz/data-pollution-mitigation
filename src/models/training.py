@@ -68,7 +68,7 @@ def train_xgboost(config: Config, train_data: Any, val_data: Any):
         early_stopping_rounds=10
     )
 
-    param_grid = {'n_estimators': [50, 100, 200]}
+    param_grid = {'n_estimators': [50, 100, 150, 200]}
 
     grid_search = GridSearchCV(
         estimator=model,
@@ -92,11 +92,21 @@ def train_xgboost(config: Config, train_data: Any, val_data: Any):
 
 
 def train_logistic_regression(config: Config, train_data: Any, val_data: Any) -> Any:
-    X_train = train_data.cls
-    vector_df = pd.DataFrame(X_train.tolist(), index=X_train.index)
-    vector_df.columns = [f'cls_{i}' for i in range(768)]
-    X_train = vector_df
+    # Prepare training data
+    X_train = pd.DataFrame(
+        train_data.cls.tolist(),
+        index=train_data.cls.index,
+        columns=[f'cls_{i}' for i in range(768)]
+    )
     y_train = train_data.female
+
+    # Prepare validation data
+    X_val = pd.DataFrame(
+        val_data.cls.tolist(),
+        index=val_data.cls.index,
+        columns=[f'cls_{i}' for i in range(768)]
+    )
+    y_val = val_data.female
 
     model = LogisticRegression(max_iter=config.max_iter, random_state=config.random_seed)
 
@@ -111,7 +121,7 @@ def train_logistic_regression(config: Config, train_data: Any, val_data: Any) ->
         cv=kfold,
         n_jobs=-1)
 
-    grid_search.fit(X_train, y_train)
+    grid_search.fit(X_train, y_train, eval_set=[(X_val, y_val)])
 
     # Save best model
     joblib.dump(grid_search.best_estimator_, config.lr_model_path)

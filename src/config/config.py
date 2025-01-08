@@ -5,7 +5,8 @@ from ..utils.utils import Models
 class Config:
 
     # Dev mode: if True, only a subset of the data will be used
-    dev: bool = False
+    dev: bool = True
+
 
     model: Models = 'xgboost'
 
@@ -79,7 +80,7 @@ class Config:
     nn_dropout: float = 0
     nn_epochs: int = 10
     nn_batch_size: int = 32
-    nn_learning_rate: float = 0.00001
+    nn_learning_rate: float = 0.0001
     nn_model_path: str = "data/models/neural_network_uncontaminated.pth"
     if not remove_contamination:
         nn_model_path = "data/models/neural_network_contaminated.pth"

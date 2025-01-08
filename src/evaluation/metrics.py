@@ -2,7 +2,7 @@ from typing import Dict, Any
 from src.config.config import Config
 import pandas as pd
 import torch
-from sklearn.metrics import accuracy_score, precision_score, recall_score, f1_score
+from sklearn.metrics import accuracy_score, precision_score, recall_score, f1_score, confusion_matrix
 
 from  src.data.tokenization import Tokenizer
 
@@ -35,6 +35,7 @@ class ModelEvaluator:
         precision = precision_score(y_test, y_pred, average='weighted', zero_division=0)
         recall = recall_score(y_test, y_pred, average='weighted', zero_division=0)
         f1 = f1_score(y_test, y_pred, average='weighted', zero_division=0)
+        cm = confusion_matrix(y_test, y_pred)
 
         embedder = Tokenizer(self.config)
         qualitative_analysis = pd.DataFrame({
@@ -50,5 +51,6 @@ class ModelEvaluator:
             'accuracy': accuracy,
             'precision': precision,
             'recall': recall,
-            'f1_score': f1
+            'f1_score': f1,
+            'confusion_matrix': cm
         }
