@@ -67,7 +67,7 @@ def train_logistic_regression(config: Config, train_data: Any, val_data: Any) ->
     X_train = vector_df
     y_train = train_data.female
 
-    model = LogisticRegression(config.max_iter)
+    model = LogisticRegression(max_iter=config.max_iter, random_state=config.random_seed)
 
     param_grid = {'C': [0.75, 1, 1.25]}
 
