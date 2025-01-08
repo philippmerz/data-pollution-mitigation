@@ -29,7 +29,7 @@ class Pipeline:
         self.evaluator = ModelEvaluator(config)
 
         # Define pipeline stages in order
-        self.should_run = make_should_run(['raw', 'preprocessed', 'classifier_tokens'])
+        self.should_run = make_should_run(['raw', 'preprocessed', 'classifier_tokens', 'trained_model'])
 
     def run(self, start_from: utils.PipelineStage = 'raw') -> dict[str, float]:
 
