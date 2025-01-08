@@ -35,7 +35,9 @@ class ModelTrainer:
 
     def load_model(self) -> Any:
         if self.config.model == 'xgboost':
-            return XGBClassifier().load_model(self.config.xgboost_model_path)
+            model = XGBClassifier()
+            model.load_model(self.config.xgboost_model_path)
+            return model
 
         elif self.config.model == 'logistic-regression':
             return joblib.load(self.config.lr_model_path)

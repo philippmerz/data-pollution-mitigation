@@ -1,7 +1,6 @@
 import pandas as pd
 import ast
 import numpy as np
-import sys
 import argparse
 from typing import get_args
 
@@ -97,20 +96,25 @@ class Pipeline:
                 print('val data')
                 print(val_cls.head())
 
-        # Train with validation
-        print('start training...')
+            # Train with validation
+            print('start training...')
 
-        model = self.trainer.train(
-            train_data=train_cls,
-            val_data=val_cls
-        )
+            model = self.trainer.train(
+                train_data=train_cls,
+                val_data=val_cls
+            )
 
-        print('training done')
+            print('training done')
 
         if start_from == 'trained_model':
+            print(f'loading {self.config.model}')
             model = self.trainer.load_model()
+            converters = {'post': ast.literal_eval, 'attention_mask': ast.literal_eval,
+                          'cls': lambda x: np.fromstring(x.strip('[ ]'), sep=' ')}
+            test_cls = pd.read_csv(self.config.test_cls_path, converters=converters)
 
         # Final evaluation on test set
+        print(model)
         metrics = self.evaluator.evaluate(model, test_cls)
 
         return metrics

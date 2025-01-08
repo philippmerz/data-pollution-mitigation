@@ -86,4 +86,4 @@ class Config:
 
 
     # Evaluation
-    qualitative_analysis_path: str = f'data/evaluation/qualitative_analysis_{model}.csv'
+    qualitative_analysis_path: str = f'data/qualitative_analysis_{model}.csv'
