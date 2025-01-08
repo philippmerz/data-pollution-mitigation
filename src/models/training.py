@@ -34,28 +34,45 @@ class ModelTrainer:
 
 
 def train_xgboost(config: Config, train_data: Any, val_data: Any):
-
-    X_train = train_data.cls
-    vector_df = pd.DataFrame(X_train.tolist(), index=X_train.index)
-    vector_df.columns = [f'cls_{i}' for i in range(768)]
-    X_train = vector_df
+    # Prepare training data
+    X_train = pd.DataFrame(
+        train_data.cls.tolist(),
+        index=train_data.cls.index,
+        columns=[f'cls_{i}' for i in range(768)]
+    )
     y_train = train_data.female
 
-    model = XGBClassifier()
+    # Prepare validation data
+    X_val = pd.DataFrame(
+        val_data.cls.tolist(),
+        index=val_data.cls.index,
+        columns=[f'cls_{i}' for i in range(768)]
+    )
+    y_val = val_data.female
 
+    model = XGBClassifier(
+        eval_set=[(X_val, y_val)],
+        early_stopping_rounds=10,
+    )
     param_grid = {'n_estimators': [50, 100, 200]}
-
-    kfold = StratifiedKFold(n_splits=5, shuffle=True, random_state=420)
 
     grid_search = GridSearchCV(
         estimator=model,
         param_grid=param_grid,
         scoring='accuracy',
-        cv=kfold,
+        cv=5,
         verbose=1,
-        n_jobs=-1)
+        n_jobs=-1
+    )
 
-    grid_search.fit(X_train, y_train)
+    grid_search.fit(
+        X_train,
+        y_train,
+        eval_metric=['error', 'auc']
+    )
+
+    # Save best model
+    grid_search.best_estimator_.save_model(config.xgboost_model_path)
 
     return grid_search.best_estimator_
 
@@ -109,7 +126,6 @@ class NeuralNetwork(nn.Module):
 
 
 def train_neural_network(config: Config, train_data: Any, val_data: Any) -> Any:
-
     # Prepare training data
     X_train = pd.DataFrame(train_data.cls.tolist(), index=train_data.index, columns=[f'cls_{i}' for i in range(768)])
     y_train = train_data.female
@@ -145,7 +161,7 @@ def train_neural_network(config: Config, train_data: Any, val_data: Any) -> Any:
         model.train()
         epoch_loss = 0
 
-        for X_batch, y_batch in tqdm(train_loader, desc=f"Epoch {epoch+1}/{config.nn_epochs}"):
+        for X_batch, y_batch in tqdm(train_loader, desc=f"Epoch {epoch + 1}/{config.nn_epochs}"):
             optimizer.zero_grad()
             outputs = model(X_batch)
             loss = criterion(outputs, y_batch)
@@ -160,7 +176,7 @@ def train_neural_network(config: Config, train_data: Any, val_data: Any) -> Any:
             val_preds = (val_outputs.squeeze() >= 0.5).int().numpy()
             val_accuracy = accuracy_score(y_val, val_preds)
 
-        print(f"Epoch {epoch+1}, Loss: {epoch_loss / len(train_loader):.4f}, Validation Accuracy: {val_accuracy:.4f}")
+        print(f"Epoch {epoch + 1}, Loss: {epoch_loss / len(train_loader):.4f}, Validation Accuracy: {val_accuracy:.4f}")
 
         # Check if current model is the best
         if val_accuracy > best_accuracy:
@@ -172,4 +188,7 @@ def train_neural_network(config: Config, train_data: Any, val_data: Any) -> Any:
 
     # Load best model before returning
     model.load_state_dict(best_model_state)
+
+    # Save model to file
+    torch.save(model, config.nn_model_path)
     return model

@@ -72,6 +72,9 @@ class Pipeline:
         if self.should_run(start_from, 'classifier_tokens'):
             if start_from == 'classifier_tokens':
                 print('reading cls datasets...')
+                print(self.config.train_cls_path)
+                print(self.config.val_cls_path)
+                print(self.config.test_cls_path)
 
                 converters = {'post': ast.literal_eval, 'attention_mask': ast.literal_eval,
                               'cls': lambda x: np.fromstring(x.strip('[ ]'), sep=' ')}
@@ -110,7 +113,7 @@ class Pipeline:
 def main():
     config = Config()
     pipeline = Pipeline(config)
-    results = pipeline.run('preprocessed')
+    results = pipeline.run('classifier_tokens')
     print(f"Model evaluation results: {results}")
 
 

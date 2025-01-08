@@ -7,7 +7,7 @@ class Config:
     # Dev mode: if True, only a subset of the data will be used
     dev: bool = False
 
-    model: Models = 'logistic-regression'
+    model: Models = 'xgboost'
 
     # Raw data
     raw_data_path: str = "data/raw/gender.csv"
@@ -51,14 +51,20 @@ class Config:
     val_cls_path: str = "data/embedded/embedded_val_data.csv"
 
     if not remove_contamination:
+        # Always use uncontaminated data for testing
         train_cls_path = "data/embedded/embedded_train_data_contaminated.csv"
-        test_cls_path = "data/embedded/embedded_test_data_contaminated.csv"
         val_cls_path = "data/embedded/embedded_val_data_contaminated.csv"
 
     embedding_batch_size: int = 64
 
     # Training
     learning_rate: float = 0.001
+
+    # XGBoost
+    xgboost_model_path: str = "data/models/xgboost_uncontaminated.json"
+    if not remove_contamination:
+        xgboost_model_path = "data/models/xgboost_contaminated.json"
+
 
     # Logistic Regression
     max_iter: int = 1000
@@ -70,3 +76,6 @@ class Config:
     nn_epochs: int = 10
     nn_batch_size: int = 32
     nn_learning_rate: float = 0.00001
+    nn_model_path: str = "data/models/neural_network_uncontaminated.pth"
+    if not remove_contamination:
+        nn_model_path = "data/models/neural_network_contaminated.pth"
