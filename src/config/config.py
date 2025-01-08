@@ -70,6 +70,10 @@ class Config:
     max_iter: int = 1000
     random_seed: int = 42
 
+    lr_model_path: str = "data/models/logistic_regression_uncontaminated.joblib"
+    if not remove_contamination:
+        lr_model_path = "data/models/logistic_regression_contaminated.joblib"
+
     # Neural Network 
     nn_hidden_layers: list = field(default_factory=lambda: [1536, 768, 512, 768, 256, 128, 64, 64, 64])
     nn_dropout: float = 0

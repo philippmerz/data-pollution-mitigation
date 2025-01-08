@@ -10,6 +10,7 @@ import torch.optim as optim
 from torch.utils.data import DataLoader, TensorDataset
 from sklearn.metrics import accuracy_score
 from tqdm import tqdm
+import joblib
 
 import warnings
 
@@ -37,7 +38,7 @@ class ModelTrainer:
             return XGBClassifier().load_model(self.config.xgboost_model_path)
 
         elif self.config.model == 'logistic-regression':
-            return LogisticRegression().load_model(self.config.logistic_regression_model_path)
+            return joblib.load(self.config.lr_model_path)
 
         elif self.config.model == 'neural-network':
             return torch.load(self.config.nn_model_path)
@@ -109,6 +110,9 @@ def train_logistic_regression(config: Config, train_data: Any, val_data: Any) ->
         n_jobs=-1)
 
     grid_search.fit(X_train, y_train)
+
+    # Save best model
+    joblib.dump(grid_search.best_estimator_, config.lr_model_path)
 
     return grid_search.best_estimator_
 
