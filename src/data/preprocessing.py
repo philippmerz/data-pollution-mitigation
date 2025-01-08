@@ -136,7 +136,7 @@ class DataPreprocessor:
     def filter_contamination(self, post):
         # Define the regex patterns TODO move them to the config file
         pattern1 = r"\b(?:I(?:'m|'m a| am| am a| identify as| identify as a)\s)(male|female|father|mother|brother|sister|daughter|son|man|women|guy|girl|boy|husband|wife)\b"  # For self-references
-        pattern2 = r"\b(\d{2})([MF])\b"
+        pattern2 = r"\b(\d{2})([MF])\b|\b([MF])(\d{2})\b"
 
         # Replace self-references (e.g., "I am a male" -> "I am a human")
         post = re.sub(pattern1, lambda m: re.sub(r"\b(male|female|father|mother|brother|sister)\b", "human", m.group(0)), post)
