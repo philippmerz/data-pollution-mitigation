@@ -26,3 +26,7 @@ class Tokenizer:
         tokens = self.tokenizer(data, truncation=False, add_special_tokens=False)
 
         return tokens['input_ids']
+
+    def tokens_to_string(self, tokens: list[int]) -> str:
+        return self.tokenizer.batch_decode(tokens, skip_special_tokens=True)
+

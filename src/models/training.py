@@ -32,6 +32,16 @@ class ModelTrainer:
         elif self.config.model == 'neural-network':
             return train_neural_network(self.config, train_data, val_data)
 
+    def load_model(self) -> Any:
+        if self.config.model == 'xgboost':
+            return XGBClassifier().load_model(self.config.xgboost_model_path)
+
+        elif self.config.model == 'logistic-regression':
+            return LogisticRegression().load_model(self.config.logistic_regression_model_path)
+
+        elif self.config.model == 'neural-network':
+            return torch.load(self.config.nn_model_path)
+
 
 def train_xgboost(config: Config, train_data: Any, val_data: Any):
     # Prepare training data

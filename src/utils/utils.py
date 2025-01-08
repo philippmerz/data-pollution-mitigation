@@ -1,7 +1,7 @@
 from pathlib import Path
 from typing import Literal, Any, List
 
-PipelineStage = Literal['raw', 'preprocessed', 'classifier_tokens']
+PipelineStage = Literal['raw', 'preprocessed', 'classifier_tokens', 'trained_model']
 Models = Literal['neural-network', 'xgboost', 'logistic-regression']
 
 def load_data(path: Path, start_from: PipelineStage) -> Any:

@@ -79,3 +79,7 @@ class Config:
     nn_model_path: str = "data/models/neural_network_uncontaminated.pth"
     if not remove_contamination:
         nn_model_path = "data/models/neural_network_contaminated.pth"
+
+
+    # Evaluation
+    qualitative_analysis_path: str = f'data/evaluation/qualitative_analysis_{model}.csv'

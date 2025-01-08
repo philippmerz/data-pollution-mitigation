@@ -4,6 +4,8 @@ import pandas as pd
 import torch
 from sklearn.metrics import accuracy_score, precision_score, recall_score, f1_score
 
+from  src.data.tokenization import Tokenizer
+
 
 class ModelEvaluator:
     def __init__(self, config: Config):
@@ -34,6 +36,14 @@ class ModelEvaluator:
         recall = recall_score(y_test, y_pred, average='weighted', zero_division=0)
         f1 = f1_score(y_test, y_pred, average='weighted', zero_division=0)
 
+        embedder = Tokenizer(self.config)
+        qualitative_analysis = pd.DataFrame({
+            'post': embedder.tokens_to_string(data.post.tolist()),
+            'true_label': y_test,
+            'predicted_label': y_pred
+        })
+
+        qualitative_analysis.to_csv(self.config.qualitative_analysis_path, index=False)
 
         # Return metrics as a dictionary
         return {

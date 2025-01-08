@@ -1,6 +1,9 @@
 import pandas as pd
 import ast
 import numpy as np
+import sys
+import argparse
+from typing import get_args
 
 from src.data.preprocessing import DataPreprocessor
 from src.data.splitting import DataSplitter
@@ -104,18 +107,31 @@ class Pipeline:
 
         print('training done')
 
+        if start_from == 'trained_model':
+            model = self.trainer.load_model(self.config.model_path)
+
         # Final evaluation on test set
-        metrics = self.evaluator.evaluate(model, test_cls)
+        metrics = self.evaluator.evalueate(model, test_cls)
 
         return metrics
 
 
 def main():
+    parser = argparse.ArgumentParser()
+    parser.add_argument(
+        '--predict',
+        type=str,
+        choices=get_args(utils.Models),
+        help='Run prediction using specified model type'
+    )
+    args = parser.parse_args()
+    if args.predict:
+
+        return
     config = Config()
     pipeline = Pipeline(config)
     results = pipeline.run('classifier_tokens')
     print(f"Model evaluation results: {results}")
-
 
 if __name__ == "__main__":
     main()

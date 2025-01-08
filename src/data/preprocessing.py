@@ -49,13 +49,12 @@ class DataPreprocessor:
         # Tokenize the data
         print("Starting Tokenization...")
 
-        df['post'] = self.tokenizer.tokenize(df['post'].tolist())
+        df['tokens'] = self.tokenizer.tokenize(df['post'].tolist())
 
         print("Tokenization done")
 
         # Split the tokenized posts into chunks of max 512 tokens and add special tokens like [CLS] and [SEP]
-        
-        print("Splitting tokenized posts into chunks...") 
+        print("Splitting tokenized posts into chunks...")
         
         df = self.create_chunks(df, 'post') 
         
