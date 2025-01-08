@@ -110,7 +110,7 @@ class Pipeline:
 def main():
     config = Config()
     pipeline = Pipeline(config)
-    results = pipeline.run('raw')
+    results = pipeline.run('preprocessed')
     print(f"Model evaluation results: {results}")
 
 
