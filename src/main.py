@@ -108,10 +108,10 @@ class Pipeline:
         print('training done')
 
         if start_from == 'trained_model':
-            model = self.trainer.load_model(self.config.model_path)
+            model = self.trainer.load_model()
 
         # Final evaluation on test set
-        metrics = self.evaluator.evalueate(model, test_cls)
+        metrics = self.evaluator.evaluate(model, test_cls)
 
         return metrics
 
@@ -130,7 +130,7 @@ def main():
         return
     config = Config()
     pipeline = Pipeline(config)
-    results = pipeline.run('classifier_tokens')
+    results = pipeline.run('trained_model')
     print(f"Model evaluation results: {results}")
 
 if __name__ == "__main__":
