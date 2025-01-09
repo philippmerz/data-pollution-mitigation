@@ -5,10 +5,10 @@ from ..utils.utils import Models
 class Config:
 
     # Dev mode: if True, only a subset of the data will be used
-    dev: bool = True
+    dev: bool = False
 
 
-    model: Models = 'xgboost'
+    model: Models = 'neural-network'
 
     # Raw data
     raw_data_path: str = "data/raw/gender.csv"
@@ -87,4 +87,4 @@ class Config:
 
 
     # Evaluation
-    qualitative_analysis_path: str = f'data/qualitative_analysis_{model}.csv'
+    qualitative_analysis_path: str = f'data/qualitative_analysis/qualitative_analysis_{model}.csv'

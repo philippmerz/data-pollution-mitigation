@@ -1,8 +1,6 @@
 import pandas as pd
 import ast
 import numpy as np
-import argparse
-from typing import get_args
 
 from src.data.preprocessing import DataPreprocessor
 from src.data.splitting import DataSplitter
@@ -121,17 +119,6 @@ class Pipeline:
 
 
 def main():
-    parser = argparse.ArgumentParser()
-    parser.add_argument(
-        '--predict',
-        type=str,
-        choices=get_args(utils.Models),
-        help='Run prediction using specified model type'
-    )
-    args = parser.parse_args()
-    if args.predict:
-
-        return
     config = Config()
     pipeline = Pipeline(config)
     results = pipeline.run('raw')
