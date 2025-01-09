@@ -78,7 +78,7 @@ class Config:
     # Neural Network 
     nn_hidden_layers: list = field(default_factory=lambda: [1536, 768, 512, 768, 256, 128, 64, 64, 64])
     nn_dropout: float = 0
-    nn_epochs: int = 10
+    nn_epochs: int = 20
     nn_batch_size: int = 32
     nn_learning_rate: float = 0.0001
     nn_model_path: str = "data/models/neural_network_uncontaminated.pth"
